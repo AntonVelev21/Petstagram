@@ -1,0 +1,104 @@
+<div class="card">
+    <div class="top">
+        <div class="userDetails">
+            <a href="#">
+                <div class="profilepic">
+                    <div class="profile_img">
+                        <div class="image">
+                            <img src="/static/images/person.png" alt="img8">
+                        </div>
+                    </div>
+                </div>
+            </a>
+            <h3>
+                <a href="#">
+                    Diyan Kalaydzhiev
+                </a>
+                <br>
+                <span>{{ photo.location }}</span>
+            </h3>
+
+            {% if editable %}
+                <div class="edit-delete-btns">
+                    <a href="{% url 'photos:edit_photo' photo.pk %}">
+                        <img class="edit-img" src="/static/images/edit-pen-icon-6.jpg" alt="edit button">
+                    </a>
+                    <a href="{% url 'photos:delete_photo' photo.pk %}">
+                        <img class="bin-img" src="/static/images/icon-remove-22.jpg" alt="bin button">
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="imgBx" id="{{ photo.id }}">
+        <img src="{{ photo.photo.url }}" alt="post" class="cover">
+    </div>
+    <div class="bottom">
+        <div class="actionBtns">
+            <div class="left">
+                <span class="heart">
+                    <a href="{% url 'common:like' photo.pk %}">
+                        {% if photo.likes.count %}
+                            <i class="fa-solid fa-heart" style="color: #ed4040;"></i>
+                        {% else %}
+                            <i class="fa-regular fa-heart"></i>
+                        {% endif %}
+                    </a>
+                </span>
+                <a href="{% url 'common:share' photo.pk %}">
+                    <i class="fa-solid fa-share"></i>
+                </a>
+            </div>
+        </div>
+
+        <p class="likes">{{ photo.likes.count }} likes</p>
+
+        {% for pet in photo.tagged_pets.all %}
+            <a href="{% url 'pets:pet_details' 'username' pet.slug %}">
+                <p class="message">
+                    <b>{{ pet.name }}</b>
+                </p>
+            </a>
+        {% endfor %}
+
+        <a href="{% url 'photos:photo_details' photo.pk %}">
+            <h4 class="details">See details</h4>
+        </a>
+
+        <h5 class="postTime">{{ photo.date_of_publication }}</h5>
+
+        {% if editable %}
+            <div class="comments">
+                <div class="top">
+                    {% for comment in photo.comments.all %}
+                        <div class="userDetails">
+                            <div class="comment-data">
+                                <div class="profilepic">
+                                    <div class="profile_img">
+                                        <div class="image">
+                                            <img src="/static/images/person.png" alt="img8">
+                                        </div>
+                                    </div>
+                                </div>
+                                <p>
+                                    <a href="">Steven Ivanov</a>
+                                    - {{ comment.text }}
+                                </p>
+                            </div>
+                            <span>{{ comment.date_time_of_publication }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        <div class="addComments">
+            <form method="post" action="{% url 'common:add-comment' photo.pk %}">
+                {% csrf_token %}
+                <label for="id_body">Body:</label>
+                <textarea name="text" cols="40" rows="10" placeholder="Add comment..." maxlength="300"
+                          required="" id="id_body"></textarea>
+                <button type="submit">Post</button>
+            </form>
+        </div>
+        </div>
+</div>

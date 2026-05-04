@@ -1,0 +1,18 @@
+{% extends 'shared/base.html' %}
+{% block content %}
+
+    <div class="edit-delete edit-photo">
+        <h2>Edit Pet</h2>
+        <!-- Start Edit Pet From -->
+        <form method="post">
+            {% csrf_token %}
+
+            {{ form }}
+
+            <button class="add-btn" type="submit">Edit Pet</button>
+
+
+        </form>
+    </div>
+
+{% endblock %}

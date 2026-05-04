@@ -1,0 +1,22 @@
+{% extends 'shared/base.html' %}
+{% load static %}
+{% block content %}
+
+    <div class="container">
+        <div class="col-9">
+
+            <!-- Start Searchbar Form -->
+            <form class="searchbar" method="get">
+                {{ form }}
+                <button>
+                    <img src="{% static 'images/search.png' %}" height="18" alt="img2">
+                </button>
+            </form>
+
+            {% for photo in all_photos %}
+                {% include 'common/pet-posts.html' %}
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}
