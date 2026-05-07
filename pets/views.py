@@ -1,53 +1,59 @@
+from django.db.models import Prefetch
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template.context_processors import request
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, UpdateView
 from pets.forms import PetCreateForm, PetEditForm, PetDeleteForm
 from pets.models import Pet
+from photos.models import Photo
 
 
-def add_pet(request: HttpRequest) -> HttpResponse:
-    form = PetCreateForm(request.POST or None)
-    if request.method == 'POST':
-        if form.is_valid():
-            form.save()
-            return redirect('accounts:profile_details', pk=1)
-
-    context = {
-        'form': form
-    }
-
-    return render(request, 'pets/pet-add-page.html', context)
+class AddPetView(CreateView):
+    model = Pet
+    form_class = PetCreateForm
+    success_url = reverse_lazy('accounts:profile_details', kwargs={'pk': 1})
+    template_name = 'pets/pet-add-page.html'
 
 
-def delete_pet(request: HttpRequest, username: str, pet_slug: str) -> HttpResponse:
-    pet = get_object_or_404(Pet, slug=pet_slug)
-    form = PetDeleteForm(request.POST or None, instance=pet)
-    if request.method == 'POST':
-        pet.delete()
-        return redirect('pets:pet_details', slug=pet_slug)
-    context = {
-        'pet': pet,
-        'form': form
-    }
-    return render(request, 'pets/pet-delete-page.html', context)
+
+class DeletePetView(DeleteView):
+    model = Pet
+    form_class = PetDeleteForm
+    template_name = 'pets/pet-delete-page.html'
+    success_url = reverse_lazy('accounts:profile_details', kwargs={'pk': 1})
+    slug_url_kwarg = 'pet_slug'
+
+    def get_initial(self):
+        return self.object.__dict__
 
 
-def pet_details(request: HttpRequest, username: str, pet_slug: str) -> HttpResponse:
-    pet = Pet.objects.prefetch_related('photo_set').get(slug=pet_slug)
-    context = {
-        'pet': pet
-    }
-    return render(request, 'pets/pet-details-page.html', context)
+
+class PetDetailsView(DetailView):
+    model = Pet
+    context_object_name = 'pet'
+    template_name = 'pets/pet-details-page.html'
+    slug_url_kwarg = 'pet_slug'
 
 
-def edit_pet(request: HttpRequest, username: str, pet_slug: str) -> HttpResponse:
-    pet = get_object_or_404(Pet, slug=pet_slug)
-    form = PetEditForm(request.POST or None, instance=pet)
-    if request.method == 'POST':
-        if form.is_valid():
-            instance = form.save()
-            return redirect('common:home_page', slug=instance.slug)
-    context = {
-        'pet': pet,
-        'form': form
-    }
-    return render(request, 'pets/pet-edit-page.html', context)
+    def get_queryset(self):
+        return Pet.objects.prefetch_related(
+            Prefetch(
+                'photo_set',
+                queryset=Photo.objects.prefetch_related('likes', 'comments', 'tagged_pets')
+            )
+        )
+
+
+
+
+class EditPetView(UpdateView):
+    model = Pet
+    form_class = PetEditForm
+    template_name = 'pets/pet-edit-page.html'
+    slug_url_kwarg = 'pet_slug'
+
+    def get_success_url(self):
+        return reverse_lazy('pets:pet_details', kwargs={'username': self.kwargs['username'],
+                                                        'pet_slug': self.kwargs['pet_slug']})
+

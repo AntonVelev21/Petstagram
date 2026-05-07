@@ -9,7 +9,7 @@ class Pet(models.Model):
     slug = models.SlugField(unique=True, blank=True, editable=False)
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(f"{self.name}-{self.pk}")
+        self.slug = slugify(f"{self.name}-{self.id}")
         super().save(*args, **kwargs)
 
     def __str__(self):

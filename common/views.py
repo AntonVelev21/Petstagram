@@ -1,5 +1,6 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, resolve_url
+from django.views.generic import ListView
 from pyperclip import copy
 
 from common.forms import CommentForm, SearchForm
@@ -7,18 +8,27 @@ from common.models import Like
 from photos.models import Photo
 
 
-def index(request: HttpRequest) -> HttpResponse:
-    photos = Photo.objects.prefetch_related('tagged_pets', 'likes')
-    form = SearchForm(request.GET)
-    if form.is_valid():
-        pet_name = form.cleaned_data['pet_name']
-        photos = Photo.objects.prefetch_related('tagged_pets', 'likes').filter(tagged_pets__name__icontains=pet_name)
-    context = {
-        'all_photos': photos,
-        'comment_form': CommentForm,
-        'form': form
-    }
-    return render(request, 'common/home-page.html', context)
+
+class IndexView(ListView):
+    model = Photo
+    template_name = 'common/home-page.html'
+    context_object_name = 'all_photos'
+    paginate_by = 1
+
+    def get_queryset(self):
+        pet_name = self.request.GET.get('pet_name')
+        if pet_name:
+            return Photo.objects.prefetch_related('tagged_pets', 'likes').filter(tagged_pets__name__icontains=pet_name)
+        return Photo.objects.prefetch_related('tagged_pets', 'likes')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comment_form'] = CommentForm()
+        context['form'] = SearchForm(self.request.GET)
+        context['all_photos'] = context['page_obj']
+        return context
+
+
 
 
 
