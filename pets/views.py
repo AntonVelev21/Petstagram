@@ -46,7 +46,6 @@ class PetDetailsView(DetailView):
 
 
 
-
 class EditPetView(UpdateView):
     model = Pet
     form_class = PetEditForm
