@@ -13,7 +13,7 @@
           <div class="personal">
             <div class="edit">
               <!-- User Username -->
-              <p>d_kalaydzhiev</p>
+              <p>{{ profile.user.email }}</p>
 
               <!-- IF the viewer is the owner of the profile -->
               <!-- Link to Edit Profile Page -->
@@ -49,10 +49,10 @@
               <p>likes</p>
             </div>
             <!-- User First and Last Name IF Added -->
-            <h3 class="names">Diyan Kalaydziev</h3>
+            <h3 class="names">{{ profile.first_name }} {{ profile.last_name }}</h3>
 
             <!-- User Email Address -->
-            <p class="email">d.denov@gmail.com</p>
+            <p class="email">{{ profile.user.email }}</p>
 
             <!-- User Gender IF Added -->
             <p class="gender">Male</p>

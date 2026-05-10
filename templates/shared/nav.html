@@ -47,17 +47,18 @@
                     <li class="nav-item">
 
                         <!-- Link to Profile Page -->
-                        <a href="">
+                        <a href="{% url 'accounts:profile_details' pk=request.user.profile.pk %}">
                             <i>Profile</i>
                         </a>
                     </li>
                 {% if request.user.is_authenticated %}
                     <li class="nav-item">
-
-                        <!-- Lpg out -->
-                        <a href="{% url 'accounts:logout' %}">
-                            <i>Log out</i>
-                        </a>
+                        <form action="{% url 'accounts:logout' %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-links logout-button">
+                                Logout
+                            </button>
+                        </form>
                     </li>
                 {% endif %}
                 </ul>

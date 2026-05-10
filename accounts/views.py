@@ -1,11 +1,12 @@
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.views import LoginView, LogoutView
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView, TemplateView, DetailView
 
 from accounts.forms import AppUserCreationForm, AppUserLoginForm
+from accounts.models import Profile
 
 UserModel = get_user_model()
 
@@ -22,24 +23,31 @@ class UserRegisterView(CreateView):
         return redirect(self.success_url)
 
 
-##To do!
-#Implement Login and Register Views
 class UserLoginView(LoginView):
     form_class = AppUserLoginForm
     template_name = 'accounts/login-page.html'
-    success_url = reverse_lazy('common:home_page')
-    
+
+    def get_success_url(self):
+        return reverse_lazy('common:home_page')
+
+
     def form_valid(self, form):
-        super().form_valid(form)
-        instance = ...
+        Profile.objects.get_or_create(user=form.get_user())
+        return super().form_valid(form)
 
 
 
 class UserLogOutView(LogoutView):
-    success_url = reverse_lazy('common:home_page')
+    def get_success_url(self):
+        return reverse_lazy('common:home_page')
 
-def profile_details(request: HttpRequest, pk: int) -> HttpResponse:
-    return render(request, 'accounts/profile-details-page.html')
+
+
+class ProfileDetailsView(DetailView):
+    model = Profile
+    template_name = 'accounts/profile-details-page.html'
+    context_object_name = 'profile'
+
 
 
 def edit_profile(request: HttpRequest, pk: int) -> HttpResponse:

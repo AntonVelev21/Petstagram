@@ -24,9 +24,9 @@ class AppUserCreationForm(UserCreationForm):
 
 
 class AppUserLoginForm(AuthenticationForm):
-    email = forms.EmailField(required=True)
+    username = forms.EmailField(required=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['email'].widget.attrs['placeholder'] = 'Enter your email...'
+        self.fields['username'].widget.attrs['placeholder'] = 'Enter your email...'
         self.fields['password'].widget.attrs['placeholder'] = 'Enter your password...'

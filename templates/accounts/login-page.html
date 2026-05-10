@@ -9,8 +9,9 @@
             <!-- Start Login Form-->
             <form method="post">
                 {% csrf_token %}
-                {{ form.email }}
+                {{ form.username }}
                 {{ form.password }}
+                {{ form.errors }}
 
                 <!-- Login Button-->
                 <button type="submit">Log in</button>
