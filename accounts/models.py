@@ -31,9 +31,9 @@ class Profile(models.Model):
     username = models.CharField(max_length=50, unique=True)
     first_name = models.CharField(max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=30, blank=True, null=True)
-    date_of_birth = models.DateTimeField(null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
     profile_picture = models.URLField(null=True, blank=True)
-    gender = models.CharField(max_length=6, choices=TextChoices.choices)
+    gender = models.CharField(max_length=6, choices=GenderChoices.choices)
 
 
 

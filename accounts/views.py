@@ -4,9 +4,9 @@ from django.db.models import Prefetch
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, TemplateView, DetailView
+from django.views.generic import CreateView, TemplateView, DetailView, UpdateView, DeleteView
 
-from accounts.forms import AppUserCreationForm, AppUserLoginForm
+from accounts.forms import AppUserCreationForm, AppUserLoginForm, ProfileEditForm
 from accounts.models import Profile
 from photos.models import Photo
 
@@ -65,9 +65,23 @@ class ProfileDetailsView(DetailView):
         return context
 
 
-def edit_profile(request: HttpRequest, pk: int) -> HttpResponse:
-    return render(request, 'accounts/profile-edit-page.html')
+
+class ProfileEditView(UpdateView):
+    model = Profile
+    form_class = ProfileEditForm
+    template_name = 'accounts/profile-edit-page.html'
+
+    def get_success_url(self):
+        return reverse_lazy('accounts:profile_details', kwargs={'pk': self.object.pk})
 
 
-def delete_profile(request: HttpRequest, pk: int) -> HttpResponse:
-    return render(request, 'accounts/profile-delete-page.html')
+
+class ProfileDeleteView(DeleteView):
+    model = Profile
+    template_name = 'accounts/profile-delete-page.html'
+    success_url = reverse_lazy('common:home_page')
+
+'''
+To do:
+Decide what happens when user deletes his profile. To delete the user and logout or create profile create functionality.
+'''

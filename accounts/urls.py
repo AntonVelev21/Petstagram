@@ -1,5 +1,5 @@
 from django.urls import path, include
-from accounts.views import edit_profile, delete_profile, UserRegisterView, UserLoginView, \
+from accounts.views import ProfileEditView, ProfileDeleteView, UserRegisterView, UserLoginView, \
     UserLogOutView, ProfileDetailsView
 
 app_name = 'accounts'
@@ -10,8 +10,8 @@ urlpatterns = [
     path('logout/', UserLogOutView.as_view(), name='logout'),
     path('profile/<int:pk>/', include([
         path('', ProfileDetailsView.as_view(), name='profile_details'),
-        path('edit/', edit_profile, name='edit_profile'),
-        path('delete/', delete_profile, name='delete_profile')
+        path('edit/', ProfileEditView.as_view(), name='edit_profile'),
+        path('delete/', ProfileDeleteView.as_view(), name='delete_profile')
     ])),
 
     ]
