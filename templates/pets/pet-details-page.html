@@ -8,7 +8,7 @@
                 <div class="profile_img">
                     <div class="image">
                         <!-- Pet URL Image -->
-                        <img src="https://encrypted-tbn0.gstatic.com/static/images?q=tbn:ANd9GcTgoIHq82qLYnvomfz5ZkW5CLQ8VNxCyI-hUw&usqp=CAU"
+                        <img src="{{ pet.personal_photo }}"
                              alt="img8">
                     </div>
                 </div>
@@ -27,7 +27,7 @@
                     </div>
                     <div class="data">
                         <!-- Pet Total Photos -->
-                        <span>{{ pet.photo_set.count }}</span>
+                        <span>{{ pet.photos.count }}</span>
                         <p>photos</p>
                     </div>
                 </div>
@@ -37,7 +37,7 @@
 
         <div class="pet-posts">
 
-            {% for photo in pet.photo_set.all %}
+            {% for photo in pet.photos.all %}
                 {% include 'common/pet-posts.html' %}
             {% empty %}
                 <img class="no-posts" src="/static/images/no_posts.png" alt="no posts image">

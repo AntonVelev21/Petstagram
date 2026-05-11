@@ -33,11 +33,6 @@ class UserLoginView(LoginView):
         return reverse_lazy('common:home_page')
 
 
-    def form_valid(self, form):
-        Profile.objects.get_or_create(user=form.get_user())
-        return super().form_valid(form)
-
-
 
 class UserLogOutView(LogoutView):
     def get_success_url(self):
@@ -59,6 +54,7 @@ class ProfileDetailsView(DetailView):
         context = super().get_context_data(**kwargs)
         photos_count = 0
         total_likes = 0
+
         for pet in self.object.user.pets.all():
             photos_count += pet.photos.count()
             for photo in pet.photos.all():
