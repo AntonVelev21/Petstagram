@@ -37,15 +37,15 @@
             </div>
             <div class="data">
               <!-- Total Number of Photos by the User -->
-              <span>4</span>
+              <span>{{ photos_count }}</span>
               <p>photos</p>
 
               <!-- Total Number of Pets owned by the User -->
-              <span>7</span>
+              <span>{{ profile.user.pets.count }}</span>
               <p>pets</p>
 
               <!-- Total Number of Likes for the User -->
-              <span>436</span>
+              <span>{{ total_likes }}</span>
               <p>likes</p>
             </div>
             <!-- User First and Last Name IF Added -->

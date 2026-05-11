@@ -39,7 +39,7 @@ class PetDetailsView(DetailView):
     def get_queryset(self):
         return Pet.objects.prefetch_related(
             Prefetch(
-                'photo_set',
+                'photos',
                 queryset=Photo.objects.prefetch_related('likes', 'comments', 'tagged_pets')
             )
         )

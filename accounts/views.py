@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.views import LoginView, LogoutView
+from django.db.models import Prefetch
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -7,6 +8,7 @@ from django.views.generic import CreateView, TemplateView, DetailView
 
 from accounts.forms import AppUserCreationForm, AppUserLoginForm
 from accounts.models import Profile
+from photos.models import Photo
 
 UserModel = get_user_model()
 
@@ -48,6 +50,23 @@ class ProfileDetailsView(DetailView):
     template_name = 'accounts/profile-details-page.html'
     context_object_name = 'profile'
 
+    def get_queryset(self):
+        return Profile.objects.select_related('user').prefetch_related('user__pets')
+
+
+#Overwrite the get_context_data method to get the count of many to many related total photos count of all pets
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        photos_count = 0
+        total_likes = 0
+        for pet in self.object.user.pets.all():
+            photos_count += pet.photos.count()
+            for photo in pet.photos.all():
+                total_likes += photo.likes.count()
+
+        context['photos_count'] = photos_count
+        context['total_likes'] = total_likes
+        return context
 
 
 def edit_profile(request: HttpRequest, pk: int) -> HttpResponse:

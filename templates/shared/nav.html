@@ -52,14 +52,14 @@
                         </a>
                     </li>
                 {% if request.user.is_authenticated %}
-                    <li class="nav-item">
-                        <form action="{% url 'accounts:logout' %}" method="post" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="nav-links logout-button">
-                                Logout
-                            </button>
-                        </form>
-                    </li>
+
+                    <form action="{% url 'accounts:logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="button">
+                            Logout
+                        </button>
+                    </form>
+
                 {% endif %}
                 </ul>
             </div>
