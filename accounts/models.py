@@ -27,7 +27,7 @@ class Profile(models.Model):
         MALE = 'M', 'Male'
         FEMALE = 'F', 'Female'
 
-    user = models.OneToOneField(UserModel, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(UserModel, on_delete=models.CASCADE, primary_key=True, related_name='profile')
     username = models.CharField(max_length=50, unique=True)
     first_name = models.CharField(max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=30, blank=True, null=True)

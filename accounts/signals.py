@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
-from accounts.models import Profile
+from accounts.models import Profile, AppUser
 
 User = get_user_model()
 
@@ -19,3 +19,11 @@ def profile_create(sender, instance, created, **kwargs):
             user=instance
         )
         profile.save()
+
+
+
+@receiver(post_delete, sender=Profile)
+def user_delete(sender, instance, **kwargs):
+    user = instance.user
+    user.delete()
+

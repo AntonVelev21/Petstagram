@@ -81,7 +81,3 @@ class ProfileDeleteView(DeleteView):
     template_name = 'accounts/profile-delete-page.html'
     success_url = reverse_lazy('common:home_page')
 
-'''
-To do:
-Decide what happens when user deletes his profile. To delete the user and logout or create profile create functionality.
-'''
