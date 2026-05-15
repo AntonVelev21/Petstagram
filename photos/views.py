@@ -1,3 +1,4 @@
+from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -6,9 +7,12 @@ from photos.models import Photo
 
 
 def add_photo(request: HttpRequest) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
     form = PhotoCreateForm(request.POST or None, request.FILES or None)
     if request.method == 'POST':
         if form.is_valid():
+            form.user = request.user
             form.save()
             return redirect('common:home_page')
     context = {
@@ -26,7 +30,11 @@ def photo_details(request: HttpRequest, pk: int) -> HttpResponse:
 
 
 def edit_photo(request: HttpRequest, pk: int) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
     photo = get_object_or_404(Photo, pk=pk)
+    if photo.user != request.user:
+        raise PermissionDenied()
     form = PhotoEditForm(request.POST or None, request.FILES or None, instance=photo)
     if request.method == 'POST':
         if form.is_valid():
@@ -39,5 +47,10 @@ def edit_photo(request: HttpRequest, pk: int) -> HttpResponse:
 
 
 def delete_photo(request: HttpRequest, pk: int) -> HttpResponse:
-    Photo.objects.get(pk=pk).delete()
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
+    photo = Photo.objects.get(pk=pk)
+    if photo.user != request.user:
+        raise PermissionDenied()
+    photo.delete()
     return redirect('common:home_page')

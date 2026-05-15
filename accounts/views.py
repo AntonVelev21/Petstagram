@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model, login
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
+from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
@@ -36,11 +38,11 @@ class UserLoginView(LoginView):
 
 class UserLogOutView(LogoutView):
     def get_success_url(self):
-        return reverse_lazy('common:home_page')
+        return reverse_lazy('accounts:login')
 
 
 
-class ProfileDetailsView(DetailView):
+class ProfileDetailsView(LoginRequiredMixin, DetailView):
     model = Profile
     template_name = 'accounts/profile-details-page.html'
     context_object_name = 'profile'
@@ -66,7 +68,7 @@ class ProfileDetailsView(DetailView):
 
 
 
-class ProfileEditView(UpdateView):
+class ProfileEditView(LoginRequiredMixin, UpdateView):
     model = Profile
     form_class = ProfileEditForm
     template_name = 'accounts/profile-edit-page.html'
@@ -74,10 +76,20 @@ class ProfileEditView(UpdateView):
     def get_success_url(self):
         return reverse_lazy('accounts:profile_details', kwargs={'pk': self.object.pk})
 
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset=queryset)
+        if self.object.user != self.request.user:
+            raise PermissionDenied()
+        return self.object
 
 
-class ProfileDeleteView(DeleteView):
+class ProfileDeleteView(LoginRequiredMixin, DeleteView):
     model = Profile
     template_name = 'accounts/profile-delete-page.html'
     success_url = reverse_lazy('common:home_page')
 
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset=queryset)
+        if self.object.user != self.request.user:
+            raise PermissionDenied()
+        return self.object

@@ -6,7 +6,7 @@ from photos.models import Photo
 class PhotoBaseForm(ModelForm):
     class Meta:
         model = Photo
-        fields = '__all__'
+        exclude = ['user']
 
         widgets = {
             'photo': forms.FileInput(attrs={'placeholder': 'Upload photo'}),

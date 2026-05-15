@@ -9,9 +9,10 @@
             <form method="post">
                 {% csrf_token %}
 
-                 {{ form.email }}
+                {{ form.email }}
                 {{ form.password1 }}
                 {{ form.password2 }}
+                {{ form.errors }}
 
                 <button type="submit">Register</button>
             </form>

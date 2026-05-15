@@ -21,6 +21,7 @@
 
               <!-- IF the viewer is the owner of the profile -->
               <!-- Link to Edit Profile Page -->
+            {% if request.user == profile.user %}
               <a href="{% url 'accounts:edit_profile' pk=profile.pk %}">
                 <img
                   class="edit-img"
@@ -37,6 +38,7 @@
                   alt="bin button"
                 />
               </a>
+            {% endif %}
               <!-- End IF the viewer is the owner of the profile -->
             </div>
             <div class="data">
