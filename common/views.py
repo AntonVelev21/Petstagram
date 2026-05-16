@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, resolve_url
 from django.views.generic import ListView
@@ -13,7 +14,7 @@ class IndexView(ListView):
     model = Photo
     template_name = 'common/home-page.html'
     context_object_name = 'all_photos'
-    paginate_by = 1
+    paginate_by = 2
 
     def get_queryset(self):
         pet_name = self.request.GET.get('pet_name')
@@ -31,14 +32,15 @@ class IndexView(ListView):
 
 
 
-
 def like_view(request: HttpRequest, photo_id) -> HttpResponse:
-    like = Like.objects.filter(to_photo=photo_id).first()
-    if like:
+    user = request.user
+    like = Like.objects.filter(to_photo=photo_id).last()
+    if like.user == user:
         like.delete()
     else:
         Like.objects.create(
-            to_photo_id=photo_id
+            to_photo_id=photo_id,
+            user=user
         )
 
     return redirect(request.META.get('HTTP_REFERER') + f"#{photo_id}")

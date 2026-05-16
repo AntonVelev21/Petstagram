@@ -39,7 +39,7 @@
             <div class="left">
                 <span class="heart">
                     <a href="{% url 'common:like' photo.pk %}">
-                        {% if photo.likes.count %}
+                        {% if request.user in photo.likes.all %}
                             <i class="fa-solid fa-heart" style="color: #ed4040;"></i>
                         {% else %}
                             <i class="fa-regular fa-heart"></i>
@@ -77,12 +77,12 @@
                                 <div class="profilepic">
                                     <div class="profile_img">
                                         <div class="image">
-                                            <img src="/static/images/person.png" alt="img8">
+                                            <img src="{{ comment.user.profile.profile_picture }}" alt="img8">
                                         </div>
                                     </div>
                                 </div>
                                 <p>
-                                    <a href="">Steven Ivanov</a>
+                                    <a href="{% url 'accounts:profile_details' comment.user.pk %}">{{ comment.user.profile.username }}</a>
                                     - {{ comment.text }}
                                 </p>
                             </div>
