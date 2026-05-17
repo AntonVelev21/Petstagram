@@ -19,18 +19,17 @@ class IndexView(ListView):
 
     def get_queryset(self):
         pet_name = self.request.GET.get('pet_name')
-        if pet_name:
-            return (Photo.objects.prefetch_related('tagged_pets',).
-                    filter(tagged_pets__name__icontains=pet_name)).annotate(
-                    is_liked_by_user=(Exists(Like.objects.filter(to_photo=OuterRef('pk'),
-                    user=self.request.user))),
-                    likes_count=Count('likes'))
+        photo = Photo.objects.prefetch_related('tagged_pets').annotate(likes_count=Count('likes'))
 
-        return Photo.objects.prefetch_related('tagged_pets').annotate(
-                is_liked_by_user=(Exists(Like.objects.filter(
-                to_photo=OuterRef('pk'),
-                user=self.request.user))),
-                likes_count=Count('likes'))
+        if pet_name:
+            photo = (Photo.objects.prefetch_related('tagged_pets').
+                    filter(tagged_pets__name__icontains=pet_name)).annotate(likes_count=Count('likes'))
+
+        if self.request.user.is_authenticated:
+            photo = photo.annotate(is_liked_by_user=(Exists(Like.objects.filter(to_photo=OuterRef('pk'),
+                                                                                user=self.request.user))))
+        return photo
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -48,16 +47,19 @@ Make photos show red heart when liked by the current user and withe when don't
 
 def like_view(request: HttpRequest, photo_id) -> HttpResponse:
     user = request.user
-    like = Like.objects.filter(to_photo=photo_id).last()
-    if like.user == user:
-        like.delete()
-    else:
-        Like.objects.create(
-            to_photo_id=photo_id,
-            user=user
-        )
+    if user.is_authenticated:
+        like = Like.objects.filter(to_photo=photo_id).last()
+        if like.user == user:
+            like.delete()
+        else:
+            Like.objects.create(
+                to_photo_id=photo_id,
+                user=user
+            )
 
-    return redirect(request.META.get('HTTP_REFERER') + f"#{photo_id}")
+        return redirect(request.META.get('HTTP_REFERER') + f"#{photo_id}")
+
+    return redirect('accounts:login')
 
 
 
@@ -68,14 +70,17 @@ def share_view(request: HttpRequest, photo_id) -> HttpResponse:
 
 
 def add_comment(request: HttpRequest, photo_id):
-    if request.method == 'POST':
-        photo = Photo.objects.get(id=photo_id)
-        form = CommentForm(request.POST or None)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.photo = photo
-            form.save()
-        print(form.errors)
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            photo = Photo.objects.get(id=photo_id)
+            form = CommentForm(request.POST or None)
+            if form.is_valid():
+                comment = form.save(commit=False)
+                comment.photo = photo
+                form.save()
+            print(form.errors)
 
-        return redirect(request.META.get('HTTP_REFERER') + f"#{photo_id}")
+            return redirect(request.META.get('HTTP_REFERER') + f"#{photo_id}")
+
+    return redirect('accounts:login')
 

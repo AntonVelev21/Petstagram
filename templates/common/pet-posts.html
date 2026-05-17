@@ -5,7 +5,11 @@
                 <div class="profilepic">
                     <div class="profile_img">
                         <div class="image">
-                            <img src="{{ photo.user.profile.profile_picture }}" alt="img8">
+                            {% if profile.profile_picture %}
+                                <img src="{{ profile.profile_picture }}"  alt="img8"/>
+                            {% else %}
+                                <img src="/static/images/person.png" alt="img8" />
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -70,25 +74,31 @@
 
         {% if editable %}
             <div class="comments">
-                <div class="top">
-                    {% for comment in photo.comments.all %}
-                        <div class="userDetails">
-                            <div class="comment-data">
-                                <div class="profilepic">
-                                    <div class="profile_img">
-                                        <div class="image">
-                                            <img src="{{ comment.user.profile.profile_picture }}" alt="img8">
+                <div class="comments">
+                    <div class="top" style="display: flex; flex-direction: column; gap: 20px;">
+                        {% for comment in photo.comments.all %}
+                            <div class="userDetails" style="margin-bottom: 20px;">
+                                <div class="comment-data">
+                                    <div class="profilepic">
+                                        <div class="profile_img">
+                                            <div class="image">
+                                                {% if comment.user.profile.profile_picture %}
+                                                    <img src="{{ comment.user.profile.profile_picture }}" alt="img8"/>
+                                                {% else %}
+                                                    <img src="/static/images/person.png" alt="img8" />
+                                                {% endif %}
+                                            </div>
                                         </div>
                                     </div>
+                                    <p>
+                                        <a href="{% url 'accounts:profile_details' comment.user.pk %}">{{ comment.user.profile.username }}</a>
+                                        - {{ comment.text }}
+                                    </p>
                                 </div>
-                                <p>
-                                    <a href="{% url 'accounts:profile_details' comment.user.pk %}">{{ comment.user.profile.username }}</a>
-                                    - {{ comment.text }}
-                                </p>
+                                <span>{{ comment.date_time_of_publication }}</span>
                             </div>
-                            <span>{{ comment.date_time_of_publication }}</span>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         {% endif %}

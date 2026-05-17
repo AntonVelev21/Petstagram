@@ -24,11 +24,11 @@ def add_photo(request: HttpRequest) -> HttpResponse:
 
 
 def photo_details(request: HttpRequest, pk: int) -> HttpResponse:
-    photo = Photo.objects.annotate(
-                is_liked_by_user=(Exists(Like.objects.
-                                        filter(to_photo=OuterRef('pk'),
-                                        user=request.user))),
-                                        likes_count=Count('likes')).get(pk=pk)
+    photo = Photo.objects.annotate(likes_count=Count('likes')).get(pk=pk)
+    if request.user.is_authenticated:
+        photo = Photo.objects.annotate(likes_count=Count('likes'),
+                                       is_liked_by_user=(Exists(Like.objects.filter(to_photo=OuterRef('pk'),
+                                       user=request.user)))).get(pk=pk)
     context = {
         'photo': photo
     }

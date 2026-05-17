@@ -42,7 +42,7 @@ class UserLogOutView(LogoutView):
 
 
 
-class ProfileDetailsView(LoginRequiredMixin, DetailView):
+class ProfileDetailsView(DetailView):
     model = Profile
     template_name = 'accounts/profile-details-page.html'
     context_object_name = 'profile'

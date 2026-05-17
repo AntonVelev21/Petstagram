@@ -145,4 +145,11 @@ LOGOUT_REDIRECT_URL = reverse_lazy('accounts:login')
 LOGIN_URL = reverse_lazy('accounts:login')
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
+EMAIL_HOST = 'smtp.mailjet.com'
+COMPANY_EMAIL = os.getenv('COMPANY_EMAIL')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = 587
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
