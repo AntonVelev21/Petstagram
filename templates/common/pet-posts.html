@@ -39,7 +39,7 @@
             <div class="left">
                 <span class="heart">
                     <a href="{% url 'common:like' photo.pk %}">
-                        {% if request.user in photo.likes.all %}
+                        {% if photo.is_liked_by_user %}
                             <i class="fa-solid fa-heart" style="color: #ed4040;"></i>
                         {% else %}
                             <i class="fa-regular fa-heart"></i>
@@ -52,7 +52,7 @@
             </div>
         </div>
 
-        <p class="likes">{{ photo.likes.count }} likes</p>
+        <p class="likes">{{ photo.likes_count }} likes</p>
 
         {% for pet in photo.tagged_pets.all %}
             <a href="{% url 'pets:pet_details' 'username' pet.slug %}">

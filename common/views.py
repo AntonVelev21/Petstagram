@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.db.models import Exists, OuterRef, Count
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, resolve_url
 from django.views.generic import ListView
@@ -19,8 +20,17 @@ class IndexView(ListView):
     def get_queryset(self):
         pet_name = self.request.GET.get('pet_name')
         if pet_name:
-            return Photo.objects.prefetch_related('tagged_pets', 'likes').filter(tagged_pets__name__icontains=pet_name)
-        return Photo.objects.prefetch_related('tagged_pets', 'likes')
+            return (Photo.objects.prefetch_related('tagged_pets',).
+                    filter(tagged_pets__name__icontains=pet_name)).annotate(
+                    is_liked_by_user=(Exists(Like.objects.filter(to_photo=OuterRef('pk'),
+                    user=self.request.user))),
+                    likes_count=Count('likes'))
+
+        return Photo.objects.prefetch_related('tagged_pets').annotate(
+                is_liked_by_user=(Exists(Like.objects.filter(
+                to_photo=OuterRef('pk'),
+                user=self.request.user))),
+                likes_count=Count('likes'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -28,7 +38,11 @@ class IndexView(ListView):
         context['form'] = SearchForm(self.request.GET)
         context['all_photos'] = context['page_obj']
         return context
-
+"""
+To do!
+Make photos show red heart when liked by the current user and withe when don't
+ (Try do it in template and then in the Index and Photo detail views)
+"""
 
 
 

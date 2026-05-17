@@ -1,7 +1,9 @@
 from django.core.exceptions import PermissionDenied
+from django.db.models import Exists, OuterRef, Count
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
+from common.models import Like
 from photos.forms import PhotoCreateForm, PhotoEditForm
 from photos.models import Photo
 
@@ -22,7 +24,11 @@ def add_photo(request: HttpRequest) -> HttpResponse:
 
 
 def photo_details(request: HttpRequest, pk: int) -> HttpResponse:
-    photo = Photo.objects.prefetch_related('likes', 'comments').get(pk=pk)
+    photo = Photo.objects.annotate(
+                is_liked_by_user=(Exists(Like.objects.
+                                        filter(to_photo=OuterRef('pk'),
+                                        user=request.user))),
+                                        likes_count=Count('likes')).get(pk=pk)
     context = {
         'photo': photo
     }
