@@ -14,8 +14,9 @@ def add_photo(request: HttpRequest) -> HttpResponse:
     form = PhotoCreateForm(request.POST or None, request.FILES or None)
     if request.method == 'POST':
         if form.is_valid():
-            form.user = request.user
-            form.save()
+            photo = form.save(commit=False)
+            photo.user_id = request.user.id
+            photo.save()
             return redirect('common:home_page')
     context = {
         'form': form

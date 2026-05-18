@@ -5,8 +5,8 @@
                 <div class="profilepic">
                     <div class="profile_img">
                         <div class="image">
-                            {% if profile.profile_picture %}
-                                <img src="{{ profile.profile_picture }}"  alt="img8"/>
+                            {% if photo.user.profile.profile_picture %}
+                                <img src="{{ photo.user.profile.profile_picture }}"  alt="img8"/>
                             {% else %}
                                 <img src="/static/images/person.png" alt="img8" />
                             {% endif %}

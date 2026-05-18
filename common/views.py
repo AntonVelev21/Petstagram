@@ -49,7 +49,7 @@ def like_view(request: HttpRequest, photo_id) -> HttpResponse:
     user = request.user
     if user.is_authenticated:
         like = Like.objects.filter(to_photo=photo_id).last()
-        if like.user == user:
+        if like and like.user == user:
             like.delete()
         else:
             Like.objects.create(
@@ -77,6 +77,7 @@ def add_comment(request: HttpRequest, photo_id):
             if form.is_valid():
                 comment = form.save(commit=False)
                 comment.photo = photo
+                comment.user_id = request.user.id
                 form.save()
             print(form.errors)
 
