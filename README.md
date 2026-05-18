@@ -2,6 +2,8 @@
 
 Petstagram is a social media platform designed for pet owners and animal lovers. It allows users to create profiles for themselves and their pets, share photos, tag pets in photos, and interact with the community through likes and comments.
 
+[📖 View Full Project Documentation here](./DOCUMENTATION.md)
+
 ![Entity Relationship Diagram](images_for_github/img_2.png) 
 
 ### Profile details
